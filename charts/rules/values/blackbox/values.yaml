@@ -1,0 +1,91 @@
+additionalRulesLabels: {}
+rules:
+  - alert: IcmpProbeFailed
+    expr: probe_success{job="icmp_check"} == 0
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: Blackbox probe failed (instance {{ $labels.instance }})
+      description: "Probe failed\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: TcpProbeFailed
+    expr: probe_success{job="tcp_check"} == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: Blackbox probe failed (instance {{ $labels.instance }})
+      description: "Probe failed\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: HttpFailure
+    expr: probe_http_status_code <= 199 OR probe_http_status_code >= 400
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: HTTP failure on (target {{ $labels.instance }})
+      description: "HTTP status code is not 200-399\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: SslCertificateWillExpireSoon
+    expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 14
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: SSL certificate will expire soon (instance {{ $labels.instance }})
+      description: "SSL certificate expires in 2 Weeks\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: SslCertificateWillExpireSoon
+    expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 5
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: SSL certificate will expire soon (instance {{ $labels.instance }})
+      description: "SSL certificate expires in 5 days\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: SslCertificateExpired
+    expr: probe_ssl_earliest_cert_expiry - time() <= 0
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: SSL certificate expired on (target {{ $labels.instance }})
+      description: "SSL certificate has expired already\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: HttpResolvedSlowly
+    expr: probe_http_duration_seconds{phase="resolve",job="app_api_check"} > 5
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: Http resolved slow on (target {{ $labels.instance }})
+      description: "HTTP Resolve took more than 5s\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: HttpConnectedSlowly
+    expr: probe_http_duration_seconds{phase="connect",job="app_api_check"} > 10
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: Http connected slowly on (target {{ $labels.instance }})
+      description: "HTTP connection took more than 10s\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: HttpProcessingTooSlow
+    expr: probe_http_duration_seconds{phase="processing",job="app_api_check"} > 30
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: Http processing slow on (target {{ $labels.instance }})
+      description: "HTTP Processing stage took more than 30s\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: HttpTransferingTooSlow
+    expr: probe_http_duration_seconds{phase="transfer",job="app_api_check"} > 10
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: Http transfering too slow on (target {{ $labels.instance }})
+      description: "HTTP transfering stage took more than 10s\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"

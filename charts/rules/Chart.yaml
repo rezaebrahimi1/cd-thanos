@@ -1,0 +1,11 @@
+apiVersion: v1
+appVersion: 0.10.0
+description: A simple Helm chart for prometheus rules
+keywords:
+- rules
+- prometheus
+maintainers:
+- email: ebrhaimi69.job@gmail.com
+  name: Reza
+name: prometheusrules
+version: 1.0.0

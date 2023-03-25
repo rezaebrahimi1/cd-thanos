@@ -1,0 +1,54 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: {{ template "servicemonitor.name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+    prometheus: {{ .Release.Name }}
+    {{- if .Values.additionalServiceMonitorLabels }}
+{{ toYaml .Values.additionalServiceMonitorLabels | indent 4 }}
+    {{- end }}    
+  name: {{ template "servicemonitor.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "servicemonitor.name" . }}
+      chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+      release: {{ .Release.Name }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.namespaceSelector }}
+  endpoints:
+    {{- if .Values.metricsPortName }}
+  - port: "{{ .Values.metricsPortName }}"
+    {{- end }}
+    {{- if .Values.serviceMonitor.interval }}
+    interval: {{ .Values.serviceMonitor.interval }}
+    path: {{ .Values.path }}
+    {{- end }}
+    {{- if .Values.serviceMonitor.scrapeTimeout }}
+    scrapeTimeout: {{ .Values.serviceMonitor.scrapeTimeout }}
+    {{- end }}
+    {{- if .Values.serviceMonitor.honorLabels }}
+    honorLabels: {{ .Values.serviceMonitor.honorLabels }}
+    {{- end }}
+    {{- if .Values.serviceMonitor.metricRelabelings }}
+    metricRelabelings: 
+{{ toYaml .Values.serviceMonitor.metricRelabelings | indent 6 }}
+    {{- end }}
+    {{- if .Values.serviceMonitor.relabelings }}
+    relabelings:
+{{ toYaml .Values.serviceMonitor.relabelings | indent 6 }}
+    {{- end }}
+    {{- if .Values.serviceMonitor.params }}
+    params: 
+{{ toYaml .Values.serviceMonitor.params | indent 6 }}
+    {{- end }}
+    {{- if .Values.serviceMonitor.bearerToken }}
+    bearerTokenSecret:
+{{ toYaml .Values.serviceMonitor.bearerToken | indent 6 }}
+    {{- end }}
+
+

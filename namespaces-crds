@@ -1,0 +1,14 @@
+### MonitoringNamespaces ###
+thanos
+prometheus-blackbox
+prometheus-k8s
+### MonitoringCRDs ####
+https://raw.githubusercontent.com/bitnami/charts/main/bitnami/kube-prometheus/crds/crd-alertmanager-config.yaml
+https://raw.githubusercontent.com/bitnami/charts/main/bitnami/kube-prometheus/crds/crd-alertmanager.yaml
+https://raw.githubusercontent.com/bitnami/charts/main/bitnami/kube-prometheus/crds/crd-podmonitor.yaml
+https://raw.githubusercontent.com/bitnami/charts/main/bitnami/kube-prometheus/crds/crd-probes.yaml
+https://raw.githubusercontent.com/bitnami/charts/main/bitnami/kube-prometheus/crds/crd-prometheus.yaml
+https://raw.githubusercontent.com/bitnami/charts/main/bitnami/kube-prometheus/crds/crd-prometheusrules.yaml
+https://raw.githubusercontent.com/bitnami/charts/main/bitnami/kube-prometheus/crds/crd-servicemonitor.yaml
+https://raw.githubusercontent.com/bitnami/charts/main/bitnami/kube-prometheus/crds/crd-thanosrulers.yaml
+### EndOfFile ####

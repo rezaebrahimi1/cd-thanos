@@ -1,0 +1,83 @@
+templates:
+  servicemonitor: &servicemonitor
+    namespace: prometheus-example
+    chart: ./charts/servicemonitors
+    version: 0.1.0
+    installed: true
+
+  rules: &rules
+    namespace: thanos
+    chart: ./charts/rules
+    version: 0.1.0
+    installed: true
+
+  blackbox: &blackbox
+    namespace: prometheus-blackbox
+    chart: ./charts/blackbox-exporter
+    version: 0.1.0
+    installed: true
+
+  alertmanager: &alertmanager
+    namespace: thanos
+    chart: prometheus-community/alertmanager
+    version: 0.22.0
+    installed: true
+
+releases:
+############################
+# scrape (servicemonitors) #
+############################
+  - name: app1-edge-iptables
+    namespace: prometheus-app1
+    values:
+      - ./charts/servicemonitors/values/app1/app1-edge-iptables.yaml
+    labels:
+      scrap: app1-edge-nginx-9119
+    <<: *servicemonitor
+#########
+# Rules #
+#########
+  - name: blackboxrule
+    values:
+      - ./charts/rules/values/blackbox/values.yaml
+    labels:
+      rule: blackboxrule
+    <<: *rules
+
+  - name: prometheus
+    values:
+      - ./charts/rules/values/prometheus/values.yaml
+    labels:
+      rule: prometheus
+    <<: *rules
+#####################
+# blackbox-exporter #
+#####################
+  - name: blackbox-icmp
+    values:
+      - ./charts/blackbox-exporter/values/icmp/icmp.yaml
+    <<: *blackbox
+
+  - name: blackbox-app-api-check
+    values:
+      - ./charts/blackbox-exporter/values/app-api-check/app-api-check.yaml
+    <<: *blackbox
+      
+  - name: blackbox-ssl-check
+    values:
+      - ./charts/blackbox-exporter/values/ssl-check/ssl-check.yaml
+    <<: *blackbox
+
+  - name: blackbox-tcp-check
+    values:
+      - ./charts/blackbox-exporter/values/tcp-check/tcp-check.yaml
+    <<: *blackbox
+################
+# Alertmanager #
+################
+  - name: alertmanager
+    values:
+      - ./charts/alertmangers/values.yaml
+    labels:
+      prometheus: alertmanager
+    <<: *alertmanager

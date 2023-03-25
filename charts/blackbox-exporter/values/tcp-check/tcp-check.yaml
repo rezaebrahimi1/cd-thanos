@@ -1,0 +1,14 @@
+module: tcp_connect
+namespace: prometheus-blackbox
+blackboxexporter:
+  - serviceName: prometheus-blackbox-kube-p-blackbox-exporter
+    namespace: prometheus-blackbox
+    port: 19115
+targets:
+  - 192.192.192.192:8162
+
+relabelings:
+    - targetLabel: service
+      replacement: 'service-example'
+    - targetLabel: group
+      replacement: 'group-example'

@@ -1,0 +1,15 @@
+module: icmp_ipv4
+namespace: prometheus-blackbox
+blackboxexporter:
+  - serviceName: prometheus-blackbox-kube-p-blackbox-exporter
+    namespace: prometheus-blackbox
+    port: 19115
+targets:
+#monitoring01.example-domain.com-155
+  - 172.172.172.172
+
+relabelings:
+  - targetLabel: type
+    replacement: "type-example"
+  - targetLabel: group
+    replacement: "group-example"

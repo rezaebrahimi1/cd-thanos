@@ -1,0 +1,234 @@
+diff --git a/values.yaml b/values.yaml
+index 3a55ecb..92d5ed8 100644
+--- a/values.yaml
++++ b/values.yaml
+@@ -9,7 +9,7 @@
+ ## @param global.storageClass Global StorageClass for Persistent Volume(s)
+ ##
+ global:
+-  imageRegistry: ""
++  imageRegistry: "registry.example-domain.com"
+   ## E.g.
+   ## imagePullSecrets:
+   ##   - myRegistryKeySecretName
+@@ -62,9 +62,9 @@ operator:
+   ## @param operator.image.pullSecrets Specify docker-registry secret names as an array
+   ##
+   image:
+-    registry: docker.io
++    registry: registry.example-domain.com
+     repository: bitnami/prometheus-operator
+-    tag: 0.61.1-debian-11-r0
++    tag: 0.59.0-debian-11-r0
+     digest: ""
+     ## Specify a imagePullPolicy
+     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+@@ -416,7 +416,7 @@ operator:
+   ## @param operator.kubeletService.namespace Namespace to deploy the kubelet service
+   ##
+   kubeletService:
+-    enabled: true
++    enabled: false
+     namespace: kube-system
+   ## Prometheus Configmap-reload image to use for reloading configmaps
+   ## defaults to Bitnami Prometheus Operator (ref: https://hub.docker.com/r/bitnami/prometheus-operator/tags/)
+@@ -502,9 +502,9 @@ prometheus:
+   ## @param prometheus.image.pullSecrets Specify docker-registry secret names as an array
+   ##
+   image:
+-    registry: docker.io
++    registry: registry.example-domain.com
+     repository: bitnami/prometheus
+-    tag: 2.40.3-debian-11-r0
++    tag: 2.38.0-debian-11-r4
+     digest: ""
+     ## Optionally specify an array of imagePullSecrets.
+     ## Secrets must be manually created in the namespace.
+@@ -753,7 +753,10 @@ prometheus:
+   ## @param prometheus.resources CPU/Memory resource requests/limits for node
+   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
+   ##
+-  resources: {}
++  resources:
++    limits:
++      cpu: "1"
++      memory: 2Gi
+   ## @param prometheus.podAffinityPreset Prometheus Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+   ##
+@@ -868,10 +871,14 @@ prometheus:
+   ## @param prometheus.alertingEndpoints Alertmanagers to which alerts will be sent
+   ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#alertmanagerendpoints
+   ##
+-  alertingEndpoints: []
++  alertingEndpoints:
++    - namespace: thanos
++      name: alertmanager
++      port: 9093
+   ## @param prometheus.externalLabels External labels to add to any time series or alerts when communicating with external systems
+   ##
+-  externalLabels: {}
++  externalLabels:
++    label1: monitoring-k8s
+   ## @param prometheus.replicaExternalLabelName Name of the external label used to denote replica name
+   ##
+   replicaExternalLabelName: ""
+@@ -913,7 +920,12 @@ prometheus:
+   ## @param prometheus.serviceMonitorNamespaceSelector Namespaces to be selected for ServiceMonitor discovery
+   ## See https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#namespaceselector for usage
+   ##
+-  serviceMonitorNamespaceSelector: {}
++  serviceMonitorNamespaceSelector:
++    matchExpressions:
++    - key: kubernetes.io/metadata.name
++      operator: In
++      values:
++        - prometheus-k8s
+   ## @param prometheus.podMonitorSelector PodMonitors to be selected for target discovery.
+   ## If {}, select all PodMonitors
+   ##
+@@ -929,10 +941,15 @@ prometheus:
+   ## @param prometheus.probeNamespaceSelector Namespaces to be selected for Probe discovery
+   ## See https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#namespaceselector for usage
+   ##
+-  probeNamespaceSelector: {}
++  probeNamespaceSelector:
++    matchExpressions:
++    - key: kubernetes.io/metadata.name
++      operator: In
++      values:
++        - prometheus-k8s
+   ## @param prometheus.retention Metrics retention days
+   ##
+-  retention: 10d
++  retention: 6h
+   ## @param prometheus.retentionSize Maximum size of metrics
+   ##
+   retentionSize: ""
+@@ -940,7 +957,7 @@ prometheus:
+   ## See https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#prometheusspec
+   ## ref: https://prometheus.io/docs/prometheus/latest/storage/#compaction
+   ##
+-  disableCompaction: false
++  disableCompaction: true
+   ## @param prometheus.walCompression Enable compression of the write-ahead log using Snappy
+   ##
+   walCompression: false
+@@ -990,7 +1007,7 @@ prometheus:
+   persistence:
+     ## @param prometheus.persistence.enabled Use PVCs to persist data. If the storageSpec is provided this will not take effect.
+     ##
+-    enabled: false
++    enabled: true
+     ## @param prometheus.persistence.storageClass Persistent Volume Storage Class
+     ## If defined, storageClassName: <storageClass>
+     ## If set to "-", storageClassName: "", which disables dynamic provisioning
+@@ -1004,7 +1021,7 @@ prometheus:
+       - ReadWriteOnce
+     ## @param prometheus.persistence.size Persistent Volume Size
+     ##
+-    size: 8Gi
++    size: 12Gi
+     ## @param prometheus.persistence.annotations Persistent Volume Claim annotations
+     ##
+     annotations: {}
+@@ -1117,7 +1134,7 @@ prometheus:
+   thanos:
+     ## @param prometheus.thanos.create Create a Thanos sidecar container
+     ##
+-    create: false
++    create: true
+     ## Bitnami Thanos image
+     ## ref: https://hub.docker.com/r/bitnami/thanos/tags/
+     ## @param prometheus.thanos.image.registry Thanos image registry
+@@ -1128,7 +1145,7 @@ prometheus:
+     ## @param prometheus.thanos.image.pullSecrets Specify docker-registry secret names as an array
+     ##
+     image:
+-      registry: docker.io
++      registry: registry.example-domain.com
+       repository: bitnami/thanos
+       tag: 0.29.0-scratch-r0
+       digest: ""
+@@ -1175,7 +1192,9 @@ prometheus:
+     ##    secretName: thanos-objstore-config
+     ##    secretKey: thanos.yaml
+     ##
+-    objectStorageConfig: {}
++    objectStorageConfig:
++      secretName: thanos-objstore-config
++      secretKey: objstore.yml
+     ## ref: https://github.com/thanos-io/thanos/blob/main/docs/components/sidecar.md
+     ## @param prometheus.thanos.extraVolumeMounts Additional volumeMounts from `prometheus.volumes` for thanos sidecar container
+     ## extraVolumeMounts:
+@@ -1420,9 +1439,9 @@ alertmanager:
+   ## @param alertmanager.image.pullSecrets Specify docker-registry secret names as an array
+   ##
+   image:
+-    registry: docker.io
++    registry: registry.example-domain.com
+     repository: bitnami/alertmanager
+-    tag: 0.24.0-debian-11-r61
++    tag: 0.24.0-debian-11-r32
+     digest: ""
+     ## Optionally specify an array of imagePullSecrets.
+     ## Secrets must be manually created in the namespace.
+@@ -1906,7 +1925,7 @@ exporters:
+   kube-state-metrics:
+     ## @param exporters.kube-state-metrics.enabled Enable kube-state-metrics
+     ##
+-    enabled: true
++    enabled: false
+ ## @param node-exporter [object] Node Exporter deployment configuration
+ ##
+ node-exporter:
+@@ -1970,7 +1989,7 @@ kubelet:
+ blackboxExporter:
+   ## @param blackboxExporter.enabled Enable Blackbox Exporter deployment
+   ##
+-  enabled: true
++  enabled: false
+   ## Bitnami Alertmanager image version
+   ## ref: https://hub.docker.com/r/bitnami/prometheus-operator/tags/
+   ## @param blackboxExporter.image.registry Blackbox Exporter image registry
+@@ -1981,9 +2000,9 @@ blackboxExporter:
+   ## @param blackboxExporter.image.pullSecrets Specify docker-registry secret names as an array
+   ##
+   image:
+-    registry: docker.io
+-    repository: bitnami/blackbox-exporter
+-    tag: 0.22.0-debian-11-r38
++    registry: registry.example-domain.com
++    repository: prom/blackbox-exporter
++    tag: v0.22.0
+     digest: ""
+     pullPolicy: IfNotPresent
+     ## Optionally specify an array of imagePullSecrets.
+@@ -2112,6 +2131,10 @@ blackboxExporter:
+         "prober": "tcp"
+         "tcp":
+           "preferred_ip_protocol": "ip4"
++      "icmp_ipv4":
++        "prober": "icmp"
++        "icmp":
++          "preferred_ip_protocol": "ip4"
+ 
+   ## @param blackboxExporter.existingConfigMap ConfigMap pointing to the Blackbox Exporter configuration
+   ##
+@@ -2153,6 +2176,9 @@ blackboxExporter:
+   podSecurityContext:
+     enabled: true
+     fsGroup: 1001
++    sysctls:
++    - name: net.ipv4.ping_group_range
++      value: "0 65536"
+   ## Configure Container Security Context
+   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+   ## @param blackboxExporter.containerSecurityContext.enabled Enabled Blackbox Exporter containers' Security Context
+@@ -2575,4 +2601,4 @@ kubeProxy:
+ ##
+ rbac:
+   create: true
+-  pspEnabled: true
+\ No newline at end of file
++  pspEnabled: true

@@ -1,0 +1,11 @@
+apiVersion: v1
+appVersion: 0.10.0
+description: A General Helm chart servicemonitor
+keywords:
+- exporter
+- servicemonitor
+maintainers:
+- email: ebrahimi69.job@gmail.com
+  name: Reza
+name: servicemonitor
+version: 1.0.0

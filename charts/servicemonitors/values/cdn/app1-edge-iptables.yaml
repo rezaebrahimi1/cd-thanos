@@ -1,0 +1,47 @@
+nameOverride: ""
+
+fullnameOverride: ""
+
+namespaceSelector: prometheus-app1
+
+endpoints:
+  - 186.186.186.186
+
+metricsPortName: app1
+
+path: "/metrics"
+
+metricsPort: 9119
+
+scheme: http
+
+additionalServiceMonitorLabels: {}
+
+additionalRulesLabels: {}
+
+prometheusRule:
+  enabled: false
+  rules: []
+
+serviceMonitor:
+  honorLabels: true
+  interval: 15s
+  scrapeTimeout: 5s
+  params: {}
+
+  relabelings:
+      - sourceLabels: [__address__]
+        targetLabel: instance
+        regex:         '(.*):(.*)'
+        replacement:   '${1}'
+      - targetLabel: type
+        replacement: "type-example"
+      - targetLabel: group
+        replacement: "group-example"
+
+  metricRelabelings:
+      - sourceLabels: [__name__]
+        regex: '(go.*|process.*)'
+        action: drop
+
+

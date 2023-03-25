@@ -1,0 +1,13 @@
+module: http_2xx
+namespace: prometheus-blackbox
+blackboxexporter:
+  - serviceName: prometheus-blackbox-kube-p-blackbox-exporter
+    namespace: prometheus-blackbox
+    port: 19115
+targets:
+  - nexus.example-domain.com 
+
+relabelings:
+  - targetLabel: env
+    replacement: "env-example"
+

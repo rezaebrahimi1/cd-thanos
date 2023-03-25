@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: {{ template "blackboxes.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    release: prometheus
+    app: "prometheus"
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    prometheus: {{ .Release.Name }}
+spec:
+  jobName: {{ template "blackboxes.fullname" . }}
+  interval: 1m
+  scrapeTimeout: 5s
+  module: {{ .Values.module }}
+  prober:
+    {{- range $org, $v := .Values.blackboxexporter }}
+    url: {{ $v.serviceName }}.{{ $v.namespace }}.svc.cluster.local:{{ $v.port }}
+    {{- end }}
+{{- if .Values.basicauth }}
+  basicAuth:
+{{ toYaml .Values.basicauth | indent 4 }}
+{{- end }}
+  targets:
+    staticConfig:
+      static:
+{{ toYaml .Values.targets | indent 6 }}
+      relabelingConfigs:
+{{ toYaml .Values.relabelings | indent 6 }}
