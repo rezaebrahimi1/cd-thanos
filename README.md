@@ -20,9 +20,6 @@ All rules are deployed on thanos namespace (but process by prometheus instances)
 
 Alertmanager is deployed on thanos namespaces. this alertmanaget is the endpoint of alertmanger endpoint which is specified on helm values of prometheus instances. the value.yaml related to alert manager is determined at chart/alertmanager/values.yaml
 
-All of the helm charts in chart folder are deployed to K8S cluster using helmfile (see helmfile.yaml file) which will be run (after any commit) in the namespace where gitlab-runner is deployed => [This link](https://https://github.com/rezaebrahimi1/helm-gitlabrunner-monitoring
-)
-
 Installing process
 
 Prerequisites
@@ -39,7 +36,7 @@ At first, prepare your cluster by deploying:
 
 Gitlab-runner
 
-The tool which is used to deploy many helm charts in this project is helmfile. To use automatic CD process defined in gitlab-ci.yml, install gitlab-runner in K8S cluster using  this link => https://https://github.com/rezaebrahimi1/helm-gitlabrunner-monitoring
+The tool which is used to deploy many helm charts in this project is helmfile. To use automatic CD process defined in gitlab-ci.yml, install gitlab-runner in K8S cluster using this link => https://github.com/rezaebrahimi1/helm-gitlabrunner-monitoring
 
 Notice that roles defined here are all needed, so the default SA (serviceaccount) in gitlab-runner namespace be able to deploy resources (servicemonitors, blackboxes, rules and alertmanagers) on specified namespaces. also all effort are made to have least privileged principle for RBAC rules related to mentioned SA.
 
