@@ -110,7 +110,7 @@ After successful completion of helm command, you can see thanos UI on <Your than
 
 file:///home/reza/Downloads/thanos-sidecar.png![image](https://user-images.githubusercontent.com/71483991/227737287-bd2ce692-92f3-4221-97d4-d87fdd9e258c.png)
 
-# Automate installation, deletion and modification**
+# Automate installation, deletion and modification
 
 To part deals with installation, deletion and modification of monitoring metric scraping resources (servicemonitors and blackboxes), alertmanagers and rules automatically by utilizing helmfile this link and using pipeline in .gitlab-ci.yml file.
 
