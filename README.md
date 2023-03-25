@@ -4,21 +4,22 @@ This project is designed to have:
 
 2- Long-term storage solution for scraped metrics in part 1 by utilizing thanos application.
 
+It is notable that this project is just an example of automate CD process of prometheus instances configuration manipulation using helmfile. The real project has about 40 helm charts to deploy different resources. All charts are execute on less than 1 minutes that reaches the power of helmfile module. 
 
 These goals are achieved by:
-1. Generate targets to be processed by thanos (By deploying servicemonitor and blackbox resources) using helmfile and gitlab-ci.
-2. Add rules to be processed by prometheus instance using hekmfile (a self-deployed chart) and gitlab-ci.
+1. Generate targets to be processed by thanos (By deploying servicemonitor and blackbox resources using helmfile and gitlab-ci).
+2. Add rules to be processed by prometheus instance using helmfile and gitlab-ci.
 3. install alertmanager using helmfile (prometheus-community/alertmanager chart) and gitlab-ci.
 4. Install prometheus instances using helm (kube-prometheus chart) by running a shellscript.
 5. Long-term storage solution for scraped metrics by installing thanos.
 
-Each prometheus instance (in prometheus-helm-values folder) is responsible for scraping some paramethers. also they are installed in seperate namespaces. To create prometehus instances using namespaces-bucketsecrets-crds.sh script, prometheus-helm-values folder should be added to project as submodule (I did not do it already in this project).
+Each prometheus instance (in prometheus-helm-values folder) is responsible for scraping some paramethers. also they are installed in seperate namespaces. To create prometehus instances using namespaces-bucketsecrets-crds.sh script, prometheus-helm-values folder should be added to project as submodule (I did not do it already in this example project). The values.path in prometheus-helm-values sub-directories show the difference of modified values with original one.
 
-Also my advise is to limit where each prometheus is looking for servicemonitors to its related prometheus namespace (do it in helm chart values.yaml file), so the CPU of apiserver can't go very high.    
+Also my advise is to limit where each prometheus is looking for servicemonitors to its related prometheus namespace (do it in helm chart values.yaml file as i did), so the CPU of apiserver can't go very high.    
 
-All rules are deployed on thanos namespace (but process by prometheus instances).
+All rules are deployed on thanos namespace (but process by all prometheus instances). but this cause no duplication on triggered rules, since each prometheus instance process its related target on its specified namespace. 
 
-Alertmanager is deployed on thanos namespaces. this alertmanaget is the endpoint of alertmanger endpoint which is specified on helm values of prometheus instances. the value.yaml related to alert manager is determined at chart/alertmanager/values.yaml
+Alertmanager is also deployed on thanos namespaces. this alertmanaget is the endpoint of alertmanger endpoint which is specified on helm values of prometheus instances. the value.yaml related to this alertmanager is determined at chart/alertmanager/values.yaml
 
 Installing process
 
