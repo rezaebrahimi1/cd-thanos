@@ -6,7 +6,7 @@ This project is designed to have:
 
 
 These goals are achieved by:
-1. Generate targets to be processed by thanos (By deploying servicemonitor and blackbox resources) using helmfile (a self-deployed chart) and gitlab-ci.
+1. Generate targets to be processed by thanos (By deploying servicemonitor and blackbox resources) using helmfile and gitlab-ci.
 2. Add rules to be processed by prometheus instance using hekmfile (a self-deployed chart) and gitlab-ci.
 3. install alertmanager using helmfile (prometheus-community/alertmanager chart) and gitlab-ci.
 4. Install prometheus instances using helm (kube-prometheus chart) by running a shellscript.
